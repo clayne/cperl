@@ -688,6 +688,7 @@ the strings?).
  Steve     5.28.1-RC1   2018-Nov-08
  Steve     5.28.1       2018-Nov-29
  Steve     5.28.2-RC1   2019-Apr-05
+ Steve     5.28.2       2019-Apr-19
 
  rurban    5.28.0c-RC1  2018-Sep-08     cperl 5.28
  rurban    5.28.0c      2018-Sep-10

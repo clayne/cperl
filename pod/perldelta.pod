@@ -5,15 +5,15 @@
 [ this is a template for a new perldelta file.  Any text flagged as XXX needs
 to be processed before release. ]
 
-perldelta - what is new for perl v5.29.9
+perldelta - what is new for perl v5.29.10
 
 =head1 DESCRIPTION
 
-This document describes differences between the 5.29.8 release and the 5.29.9
+This document describes differences between the 5.29.9 release and the 5.29.10
 release.
 
-If you are upgrading from an earlier release such as 5.29.7, first read
-L<perl5298delta>, which describes differences between 5.29.7 and 5.29.8.
+If you are upgrading from an earlier release such as 5.29.8, first read
+L<perl5299delta>, which describes differences between 5.29.8 and 5.29.9.
 
 =head1 Notice
 
@@ -25,47 +25,13 @@ XXX New core language features go here.  Summarize user-visible core language
 enhancements.  Particularly prominent performance optimisations could go
 here, but most should go in the L</Performance Enhancements> section.
 
-[ List each enhancement as a =head2 entry ]
+=head2 Perl now supports draft Unicode 12.1
 
-=head2 Wildcards in Unicode property value specifications are now
-partially supported
-
-You can now do something like this in a regular expression pattern
-
- qr! \p{nv= /(?x) \A [0-5] \z / }!
-
-which matches all Unicode code points which have numeric value is
-between 0 and 5 inclusive.
-
-This marks another step in implementing the regular expression features
-the Unicode Consortium suggests.
-
-Most properties are supported, with the remainder planned for 5.32.
-Details are in L<perlunicode/Wildcards in Property Values>.
-
-=head2 qr'\N{name}' is now supported
-
-Previously it was an error to evaluate a named character C<\N{...}>
-within a single quoted regular expression pattern (whose evaluation is
-deferred from the normal place).  This restriction is now removed.
-
-=head2 Unicode 12.0 is supported
-
-For details, see L<https://www.unicode.org/versions/Unicode12.0.0/>.
-
-Because of a change in Unicode release cycles, Perl jumps from Unicode
-10.0 in Perl 5.28 to Unicode 12.0 in Perl 5.30.
-
-=head2 It is now possible to compile perl to always use thread-safe
-locale operations.
-
-Previously, these calls were only used when the perl was compiled to be
-multi-threaded.  To always enable them, add
-
- -Accflags='-DUSE_THREAD_SAFE_LOCALE'
-
-to your F<Configure> flags.
-
+Unicode 12.1 differs from 12.0 only in the addition of a single
+character, that for the new Japanese era name.  The intent is to ship
+Perl 5.30 with Unicode 12.1.  The final release of 12.1 is scheduled for
+May 7, 2019.  Hopefully, there won't be any code changes to the draft
+after the release of Perl 5.29.10.
 
 =head1 Security
 
@@ -74,18 +40,6 @@ vulnerabilities closed should be noted here rather than in the
 L</Selected Bug Fixes> section.
 
 [ List each security issue as a =head2 entry ]
-
-=head2 Variable length lookbehind in regular expression pattern matching
-is now experimentally supported
-
-Using a lookbehind assertion (like C<(?<=foo)> or C<(?<!bar)> previously
-would generate an error and refuse to compile.  Now it compiles (if the
-maximum lookbehind is at most 255 characters), but raises a warning in
-the new C<experimental::vlb> warnings category.  This is to caution you
-that the precise behavior is subject to change based on feedback from
-use in the field.
-
-See L<perlre/(?<=pattern)> and L<perlre/(?<!pattern)>.
 
 =head1 Incompatible Changes
 
@@ -96,26 +50,6 @@ XXX For a release on a stable branch, this section aspires to be:
     report.  See L</Reporting Bugs> below.
 
 [ List each incompatible change as a =head2 entry ]
-
-=head2 C<pack()> no longer can return malformed UTF-8
-
-It croaks if it would otherwise return a UTF-8 string that contains
-malformed UTF-8.  This protects agains potential security threats.  This
-is considered a bug fix as well ([perl #131642]).
-
-=head2 Any set of digits in the Common script are legal in a script run
-of another script
-
-There are several sets of digits in the Common script.  C<[0-9]> is the
-most familiar.  But there are also C<[\x{FF10}-\x{FF19}]> (FULLWIDTH
-DIGIT ZERO - FULLWIDTH DIGIT NINE), and several sets for use in
-mathematical notation, such as the MATHEMATICAL DOUBLE-STRUCK DIGITs.
-Any of these sets should be able to appear in script runs of, say,
-Greek.  But the design of 5.30 overlooked all but the ASCII digits
-C<[0-9]>, so the design was flawed.  This has been fixed, so is both a
-bug fix and an incompatibility. [perl #133547]
-
-All digits in a run still have to come from the same set of ten digits.
 
 =head1 Deprecations
 
@@ -197,25 +131,13 @@ XXX Remove this section if not applicable.
 
 =item *
 
-L<perl5db.pl> has been upgraded from version 1.54 to 1.55.
+L<XXX> has been upgraded from version A.xx to B.yy.
 
-Debugging threaded code no longer deadlocks in C<DB::sub> nor
-C<DB::lsub>.
-
-=item *
-
-L<PerlIO::encoding> has been upgraded from version 0.26 to 0.27.
-
-Warnings enabled by setting the C<WARN_ON_ERR> flag in
-C<$PerlIO::encoding::fallback> are now only produced if warnings are
-enabled with C<use warnings "utf8";> or setting C<$^W>.
+If there was something important to note about this change, include that here.
 
 =item *
 
-L<threads::shared> has been upgraded from version 1.59 to 1.60.
-
-Added support for extra tracing of locking, this requires a
-C<-DDEBUGGING> and extra compilation flags.
+L<Module::CoreList> has been upgraded from version 5.20190320 to 5.20190420.
 
 =back
 
@@ -306,20 +228,7 @@ XXX Changes (i.e. rewording) of diagnostic messages go here
 
 =item *
 
-Specifying C<\o{}> without anything between the braces now yields the
-fatal error message "Empty \o{}".  Previously it was  "Number with no
-digits".  This means the same wording is used for this kind of error as
-with similar constructs such as C<\p{}>.
-
-=item *
-
-Within the scope of the experimental feature C<use re 'strict'>,
-specifying C<\x{}> without anything between the braces now yields the
-fatal error message "Empty \x{}".  Previously it was  "Number with no
-digits".  This means the same wording is used for this kind of error as
-with similar constructs such as C<\p{}>.  It is legal, though not wise
-to have an empty C<\x> outside of C<re 'strict'>; it silently generates
-a NUL character.
+XXX Describe change here
 
 =back
 
@@ -456,8 +365,7 @@ well.
 
 =item *
 
-Added C<newSVsv_nomg()> to copy a SV without processing get magic on
-the source.  [perl #132964]
+XXX
 
 =back
 
@@ -472,14 +380,7 @@ files in F<ext/> and F<lib/> are best summarized in L</Modules and Pragmata>.
 
 =item *
 
-C<pack()> no longer can return malformed UTF-8.  It croaks if it would
-otherwise return a UTF-8 string that contains malformed UTF-8.  This
-protects agains potential security threats.  [perl #131642]
-
-=item *
-
-See L</Any set of digits in the Common script are legal in a script run
-of another script>.
+XXX
 
 =back
 
@@ -505,6 +406,15 @@ XXX
 
 =item *
 
+The perldelta for 5.29.9 listed the enhancement about regular expression
+lookbehind in the C<Security> section rather than the C<Core Enhancements>
+section.  Its title should also have indicated that it is "Limited"
+variable-length lookbehind (up to 255 characters).  (Note that a
+technique has now been published to achieve arbitrary variable length
+lookbehind with pre-existing Perl constructs and is linked to in L<perlre>.
+It is 
+L<http://www.drregex.com/2019/02/variable-length-lookbehinds-actually.html>.)
+
 XXX Add anything here that we forgot to add, or were mistaken about, in
 the perldelta of a previous release.
 
@@ -519,7 +429,7 @@ died, add a short obituary here.
 
 XXX Generate this with:
 
-  perl Porting/acknowledgements.pl v5.29.8..HEAD
+  perl Porting/acknowledgements.pl v5.29.9..HEAD
 
 =head1 Reporting Bugs
 
